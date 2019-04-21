@@ -3,7 +3,7 @@ class NumberToWord
 	def convert_to_words phone
 		phone = phone.to_s
 		#return if number is not valid
-		if phone.nil? || !(phone !~ /\D/) || phone.size < 9 || phone.include?("1") || phone.include?('0')
+		if phone.nil? || !(phone !~ /\D/) || phone.size < 3 || phone.include?("1") || phone.include?('0')
 			puts "Provide a valid phone number"
     	return []
     end
@@ -31,37 +31,31 @@ class NumberToWord
     results = {}
     for i in (2..total_digits)
       first_array = keys[0..i]
-      next if first_array.length < 3
       second_array = keys[i + 1..total_digits]
-      next if second_array.length < 3
-      first_combination = first_array.shift.product(*first_array).map(&:join) # Get product of arrays
-      next if first_combination.nil?
-      second_combination = second_array.shift.product(*second_array).map(&:join)
-      next if second_combination.nil?
+      first_combo = first_array.shift.product(*first_array).map(&:join)
+      second_combo = second_array.shift.product(*second_array).map(&:join) if second_array && second_array.size > 0
       # Get matched words from file
-      results[i] = [(first_combination & mapping_dictionary[i+2]), (second_combination & mapping_dictionary[total_digits - i +1])]
+      results[i] = []
+      results[i] << (first_combo & mapping_dictionary[i+2]) if !first_combo.nil? && mapping_dictionary[i+2].nil?
+      results[i] << (second_combo & mapping_dictionary[total_digits - i +1]) if !second_combo.nil? && !mapping_dictionary[total_digits - i +1].nil?
     end
 
     final_words = []
-    final_result = []
+    # final_result = []
     results.each do |key, combi|
       next if combi.first.nil? || combi.last.nil?
       combi.first.product(combi.last).map{|w| final_words << w}
-      final_result << combi.first.product(combi.last).map(&:join)
     end
     # Map all char for final result
     final_words << (keys.shift.product(*keys).map(&:join) & mapping_dictionary[11]).join(", ")
-    final_result << (keys.shift.product(*keys).map(&:join) & mapping_dictionary[11]).map(&:join)
     if final_words.size <= 0
     	puts "no result Found"
     else
     	puts final_words
-    	puts '-=-=-=-=-'
-    	puts final_result
     end
 
 	end
 end
-puts "Enter 10 digit numbers"
+puts "Enter a phone number"
 phone = gets()
 NumberToWord.new().convert_to_words(phone.chop)
