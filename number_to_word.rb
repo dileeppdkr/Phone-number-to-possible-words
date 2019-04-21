@@ -18,12 +18,12 @@ class NumberToWord
     										"8" => ["t", "u", "v"],
     										"9" => ["w", "x", "y", "z"]
     									}
-		mapping_dictionary = {}
+		mapping_dictionary = []
 		file_path = "dictionary.txt"
 		#fetch all values from dictionary and store into mapping_dictionary
 		File.foreach( file_path ) do |word|
-			mapping_dictionary[word.length] = [] unless mapping_dictionary.has_key?(word.length)
-			mapping_dictionary[word.length] << word.chop.to_s.downcase
+			# mapping_dictionary[word.length] = [] unless mapping_dictionary.has_key?(word.length)
+			mapping_dictionary << word.chop.to_s.downcase
 		end
 
 		keys = phone.chars.collect{|char|mapping_letters[char]}
@@ -36,8 +36,8 @@ class NumberToWord
       second_combo = second_array.shift.product(*second_array).map(&:join) if second_array && second_array.size > 0
       # Get matched words from file
       results[i] = []
-      results[i] << (first_combo & mapping_dictionary[i+2]) if !first_combo.nil? && mapping_dictionary[i+2].nil?
-      results[i] << (second_combo & mapping_dictionary[total_digits - i +1]) if !second_combo.nil? && !mapping_dictionary[total_digits - i +1].nil?
+      results[i] << (first_combo & mapping_dictionary) if !first_combo.nil? && mapping_dictionary.nil?
+      results[i] << (second_combo & mapping_dictionary) if !second_combo.nil? && !mapping_dictionary.nil?
     end
 
     final_words = []
@@ -47,7 +47,7 @@ class NumberToWord
       combi.first.product(combi.last).map{|w| final_words << w}
     end
     # Map all char for final result
-    final_words << (keys.shift.product(*keys).map(&:join) & mapping_dictionary[11]).join(", ")
+    final_words << (keys.shift.product(*keys).map(&:join) & mapping_dictionary).join(", ")
     if final_words.size <= 0
     	puts "no result Found"
     else
