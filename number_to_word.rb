@@ -1,7 +1,6 @@
 class NumberToWord
 
 	def convert_to_words phone
-		
 		phone = phone.to_s
 		#return if number is not valid
 		if phone.nil? || !(phone !~ /\D/) || phone.size < 3 || phone.include?("1") || phone.include?('0')
@@ -19,11 +18,18 @@ class NumberToWord
     										"8" => ["t", "u", "v"],
     										"9" => ["w", "x", "y", "z"]
     									}
+mapping_dictionary = []
+file_path = "dictionary.txt"
+#fetch all values from dictionary
+File.foreach( file_path ) do |word|
+	mapping_dictionary << word.chop.to_s.downcase
+end
+keys = phone.chars.collect{|char|mapping_letters[char]}
+# puts keys
+mapping_result = keys.shift.product(*keys).map(&:join)
 
-    mapping_dictionary = {}
-    file_path = "dictionary.txt"
-    #fetch all values from dictionary
-		File.foreach(file_path).collect{|word| mapping_dictionary[word.length] << word.chop.to_s.downcase}
-
+final_result =  mapping_result & mapping_dictionary
+puts final_result
 	end
 end
+NumberToWord.new.convert_to_words 6686787825
